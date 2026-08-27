@@ -131,7 +131,7 @@ var ExternalAPI = {
     trackGameEvent: function() {},
     showCompanyLogo: function(callback) {
         if (typeof callback === "function") callback();
-        return false;
+        return true;
     },
     showWelcomeScreen: function(stage, config) {
         return false;
