@@ -170,73 +170,46 @@ var TTLoader =
 	/** @ignore */
 	setSizes: function()
 	{
-		var rect;
-		if(Utils.getWindowRect) rect = Utils.getWindowRect();
-		else rect = {width: window.innerWidth, height: window.innerHeight};
+		var pc = document.getElementById("progress_container");
+		if (!pc) return;
+		var rect = (Utils.getWindowRect) ? Utils.getWindowRect() : {width: window.innerWidth, height: window.innerHeight};
+		pc.style.width = rect.width + "px";
+		pc.style.height = rect.height + "px";
 		
-		document.getElementById("progress_container").style.width = rect.width + "px";
-		document.getElementById("progress_container").style.height = rect.height + "px";
+		var c = (Utils.globalScale || 1) * (Utils.globalPixelScale || 1);
+		var pr = document.getElementById("progress");
+		if (pr && !TTLoader.landscapeMode) pr.style.paddingTop = Math.floor(c * 80) + "px";
 		
-		if(TTLoader.backgroundImage)
-		{
-		    var sc = rect.height / TTLoader.backgroundImage.height;
-            var w = Math.floor(TTLoader.backgroundImage.width * sc);
-            var h = Math.floor(TTLoader.backgroundImage.height * sc);
-        
-            document.getElementById("progress_container").style.backgroundSize = w + "px " + h + "px";
+		var cont = document.getElementById("tt_load_progress_cont");
+		if (cont) cont.style.width = Math.floor(c * 200) + "px";
+		
+		var prog = document.getElementById("tt_load_progress");
+		if (prog) {
+			prog.style.height = Math.floor(c * 12) + "px";
+			prog.style.width = Math.floor(c * (TTLoader.progressVal || 0) * 2) + "px";
 		}
 		
-		var c = Utils.globalScale*Utils.globalPixelScale;
-		
-		if(!TTLoader.landscapeMode) document.getElementById("progress").style.paddingTop = Math.floor(c*80)+"px";
-		document.getElementById("tt_load_progress_cont").style.width = Math.floor(c*200)+"px";
-		document.getElementById("tt_load_progress").style.height = Math.floor(c*12)+"px";
-		document.getElementById('tt_load_progress').style.width = (c*TTLoader.progressVal*2)+"px";
-		document.getElementById("tt_load_progress_cont").style.marginTop = Math.floor((c*55/2 - c*12)/2) + "px";
-		
 		var logo = document.getElementById("tt_load_logo");
-		var logoScale = 582 / TTLoader.originalLogoSize.width / 2;
-		logo.setAttribute("width", Math.floor(c * TTLoader.originalLogoSize.width * logoScale)+"px");
-		logo.setAttribute("height", Math.floor(c * TTLoader.originalLogoSize.height * logoScale)+"px");
+		if (logo) {
+			logo.setAttribute("width", Math.floor(c * 300) + "px");
+			logo.setAttribute("height", Math.floor(c * 100) + "px");
+		}
 		
-		var button = document.getElementById("tt_load_button"); // 262x125
-		var buttonScale = 262 / TTLoader.originalButtonSize.width / 3;
-		document.getElementById("tt_load_button").setAttribute("width", Math.floor(c*TTLoader.originalButtonSize.width*buttonScale)+"px");
-		document.getElementById("tt_load_button").setAttribute("height", Math.floor(c*TTLoader.originalButtonSize.height*buttonScale)+"px");
-		document.getElementById("tt_load_button").style.marginTop = Math.floor((rect.height - c*125/3)/2)+"px";
-		
-		document.getElementById("tt_load_icon").setAttribute("width", Math.floor(c*128/2)+"px");
-		document.getElementById("tt_load_icon").setAttribute("height", Math.floor(c*128/2)+"px");
-		document.getElementById("tt_load_icon").style.marginTop = Math.floor((rect.height - c*128/2)/2)+"px";
-		
-		document.getElementById("tt_load_progress_wrapper").style.height = Math.floor(c*55/2)+"px";
-		document.getElementById("tt_load_progress_wrapper").style.backgroundSize = Math.floor(c*548/2)+"px " + Math.floor(c*55/2)+"px";
-
-        document.getElementById("tt_load_html5_logo").width = c*30;
-        document.getElementById("tt_load_html5_logo").height = c*33;
-        document.getElementById("tt_load_html5_logo").style.top = "-" + (c*6) + "px";
-        document.getElementById("tt_load_html5_logo").style.marginLeft = "-" + (c*15) + "px";
+		var btn = document.getElementById("tt_load_button");
+		if (btn) {
+			btn.setAttribute("width", Math.floor(c * 80) + "px");
+			btn.setAttribute("height", Math.floor(c * 40) + "px");
+		}
 	},
-	
-	progressVal: 0,
-	
-	/** 
-	 * Изменение прогресса загрузки
-	 * @param {Number} val значение в процентах от 0 до 100
-	 */
 	showLoadProgress: function(val)
 	{
-		if(val < 0) val = 0; 
-		if(val > 100) val = 100; 
-		
 		TTLoader.progressVal = val;
-		TTLoader.setSizes();
+		var prog = document.getElementById("tt_load_progress");
+		if (prog) {
+			var c = (Utils.globalScale || 1) * (Utils.globalPixelScale || 1);
+			prog.style.width = Math.floor(c * val * 2) + "px";
+		}
 	},
-	
-	/**
-	 * Завершение процесса загрузки
-	 * @param {Object} загруженные данные
-	 */
 	loadComplete: function(data)
 	{
 		TTLoader.showLoadProgress(100);
