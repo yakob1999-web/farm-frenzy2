@@ -16,7 +16,7 @@
     <meta name="browsermode" content="application">
     <meta name="format-detection" content="telephone=no">
 
-    <!-- Disable Browser Caching for Instant Updates -->
+    <!-- Disable Caching -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
@@ -93,24 +93,15 @@
         }
     </style>
 
-    <!-- Versioned Script Loading (Bypasses stale mobile browser cache) -->
-    <script type="text/javascript" src="external.js?v=3"></script>
-    <script type="text/javascript" src="portal_loader.js?v=3"></script>
-    <script type="text/javascript" src="game.js?v=3"></script>
+    <!-- Versioned Script Loading -->
+    <script type="text/javascript" src="external.js?v=4"></script>
+    <script type="text/javascript" src="portal_loader.js?v=4"></script>
+    <script type="text/javascript" src="game.js?v=4"></script>
 </head>
 <body>
     <div id="main_container"></div>
 
     <script type="text/javascript">
-        // Safe startup once DOM is ready
-        function triggerStart() {
-            if (typeof initGame === 'function') {
-                initGame();
-            } else if (typeof window.onload === 'function') {
-                window.onload();
-            }
-        }
-
         // Prevent default touch gestures (pinch-zoom, rubber-banding)
         document.addEventListener('touchmove', function(e) {
             e.preventDefault();
@@ -127,12 +118,12 @@
         document.addEventListener('touchstart', unlockAudio, false);
         document.addEventListener('click', unlockAudio, false);
 
-        if (document.readyState === 'complete' || document.readyState === 'interactive') {
-            setTimeout(triggerStart, 50);
-        } else {
-            window.addEventListener('DOMContentLoaded', triggerStart);
-            window.addEventListener('load', triggerStart);
-        }
+        // Immediate startup once window loads
+        window.addEventListener('load', function() {
+            if (typeof window.initGame === 'function') {
+                window.initGame();
+            }
+        });
     </script>
 </body>
 </html>
