@@ -97,24 +97,60 @@
     <div id="main_container"></div>
 
     <script type="text/javascript">
-        // Safe startup once DOM and assets are ready
-        window.addEventListener('DOMContentLoaded', function() {
-            // Prevent default touch gestures (pinch-zoom, rubber-banding)
-            document.addEventListener('touchmove', function(e) {
-                e.preventDefault();
-            }, { passive: false });
+        // Safe startup once DOM and scripts are ready
+        function launchGame() {
+            if (window.__gameLaunched) return;
+            window.__gameLaunched = true;
 
-            // Audio unlocking on first user interaction for iOS Safari / Chrome autoplay policy
-            var unlockAudio = function() {
-                if (window.mixer && window.mixer.context && window.mixer.context.state === 'suspended') {
-                    window.mixer.context.resume();
+            try {
+                if (typeof Utils !== 'undefined') {
+                    GET = Utils.parseGet();
+                    Sprite.CACHE_BITMAPS = Utils.isIOS();
+                    Utils.addMobileListeners(LANDSCAPE_MODE, true);
+                    Utils.mobileCorrectPixelRatio();
+                    Utils.addFitLayoutListeners();
+                    I18.init();
+                    Utils.switchToTimeMode(1000 / 24);
+                    ExternalAPI.onrefresh = refreshData;
+                    ExternalAPI.onuserdelayauth = saveExternal;
+
+                    if (typeof TTLoader !== 'undefined') {
+                        TTLoader.skipPlayButton = true;
+                    }
+
+                    if (window.ExternalAPI && typeof ExternalAPI.init === 'function') {
+                        ExternalAPI.init({}, startLoad);
+                    } else {
+                        startLoad();
+                    }
                 }
-                document.removeEventListener('touchstart', unlockAudio);
-                document.removeEventListener('click', unlockAudio);
-            };
-            document.addEventListener('touchstart', unlockAudio, false);
-            document.addEventListener('click', unlockAudio, false);
-        });
+            } catch (err) {
+                console.error("Startup error:", err);
+            }
+        }
+
+        // Prevent rubber-band scrolling on touch devices
+        document.addEventListener('touchmove', function(e) {
+            e.preventDefault();
+        }, { passive: false });
+
+        // Audio unlocking on first user interaction
+        var unlockAudio = function() {
+            if (window.mixer && window.mixer.context && window.mixer.context.state === 'suspended') {
+                window.mixer.context.resume();
+            }
+            document.removeEventListener('touchstart', unlockAudio);
+            document.removeEventListener('click', unlockAudio);
+        };
+        document.addEventListener('touchstart', unlockAudio, false);
+        document.addEventListener('click', unlockAudio, false);
+
+        if (document.readyState === 'complete' || document.readyState === 'interactive') {
+            setTimeout(launchGame, 100);
+        } else {
+            window.addEventListener('DOMContentLoaded', launchGame);
+            window.addEventListener('load', launchGame);
+        }
     </script>
 </body>
 </html>

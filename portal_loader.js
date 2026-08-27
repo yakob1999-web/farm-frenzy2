@@ -3,7 +3,7 @@ var TTLoader =
 	endCallback: null,
 	loadedData: null,
 	landscapeMode: false,
-	skipPlayButton: false,
+	skipPlayButton: true,
 	
 	backgroundUrl: "",
 	backgroundImage: null,
