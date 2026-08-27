@@ -94,36 +94,52 @@
     </style>
 
     <!-- Versioned Script Loading -->
-    <script type="text/javascript" src="external.js?v=7"></script>
-    <script type="text/javascript" src="portal_loader.js?v=7"></script>
-    <script type="text/javascript" src="game.js?v=7"></script>
+    <script type="text/javascript" src="external.js?v=8"></script>
+    <script type="text/javascript" src="portal_loader.js?v=8"></script>
+    <script type="text/javascript" src="game.js?v=8"></script>
 </head>
 <body>
     <div id="main_container"></div>
 
     <script type="text/javascript">
-        // Prevent default touch gestures (pinch-zoom, rubber-banding)
+        function bootGame() {
+            if (window.__gameEngineStarted) return;
+            if (typeof window.initGame === 'function') {
+                window.__gameEngineStarted = true;
+                window.initGame();
+            } else if (typeof startLoad === 'function') {
+                window.__gameEngineStarted = true;
+                startLoad();
+            }
+        }
+
+        // Prevent rubber-band scrolling on touch devices
         document.addEventListener('touchmove', function(e) {
             e.preventDefault();
         }, { passive: false });
 
-        // Audio unlocking on first user touch / click
+        // Audio unlocking on first user interaction
         var unlockAudio = function() {
             if (window.mixer && window.mixer.context && window.mixer.context.state === 'suspended') {
                 window.mixer.context.resume();
             }
             document.removeEventListener('touchstart', unlockAudio);
             document.removeEventListener('click', unlockAudio);
+            bootGame();
         };
         document.addEventListener('touchstart', unlockAudio, false);
         document.addEventListener('click', unlockAudio, false);
 
-        // Immediate startup once window loads
-        window.addEventListener('load', function() {
-            if (typeof window.initGame === 'function') {
-                window.initGame();
-            }
-        });
+        // Immediate boot attempt
+        bootGame();
+        if (document.readyState === 'complete' || document.readyState === 'interactive') {
+            setTimeout(bootGame, 10);
+        } else {
+            window.addEventListener('DOMContentLoaded', bootGame);
+            window.addEventListener('load', bootGame);
+        }
+        setTimeout(bootGame, 200);
+        setTimeout(bootGame, 500);
     </script>
 </body>
 </html>
