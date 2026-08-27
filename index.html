@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Farm Frenzy 2</title>
+
+    <!-- Mobile Viewport & Fullscreen Meta Tags -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, shrink-to-fit=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-touch-fullscreen" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="screen-orientation" content="landscape">
+    <meta name="x5-orientation" content="landscape">
+    <meta name="x5-fullscreen" content="true">
+    <meta name="browsermode" content="application">
+    <meta name="format-detection" content="telephone=no">
+
+    <!-- Icons -->
+    <link rel="apple-touch-icon" sizes="144x144" href="images/icon.png">
+    <link rel="icon" type="image/png" href="images/icon.png">
+
+    <!-- Local Font Faces -->
+    <style type="text/css">
+        @font-face {
+            font-family: 'a_futuraround';
+            src: url('fonts/a_futuraround.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        @font-face {
+            font-family: 'bold';
+            src: url('fonts/bold.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        @font-face {
+            font-family: 'demi';
+            src: url('fonts/demi.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        @font-face {
+            font-family: 'ds_goose';
+            src: url('fonts/ds_goose.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        * {
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #000000;
+            font-family: 'a_futuraround', 'bold', 'demi', 'ds_goose', sans-serif;
+            touch-action: none;
+            overscroll-behavior: none;
+        }
+
+        #main_container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        canvas {
+            display: block;
+            touch-action: none;
+        }
+    </style>
+
+    <!-- Correct Script Dependency Loading Order -->
+    <script type="text/javascript" src="external.js"></script>
+    <script type="text/javascript" src="portal_loader.js"></script>
+    <script type="text/javascript" src="game.js"></script>
+</head>
+<body>
+    <div id="main_container"></div>
+
+    <script type="text/javascript">
+        // Safe startup once DOM and assets are ready
+        window.addEventListener('DOMContentLoaded', function() {
+            // Prevent default touch gestures (pinch-zoom, rubber-banding)
+            document.addEventListener('touchmove', function(e) {
+                e.preventDefault();
+            }, { passive: false });
+
+            // Audio unlocking on first user interaction for iOS Safari / Chrome autoplay policy
+            var unlockAudio = function() {
+                if (window.mixer && window.mixer.context && window.mixer.context.state === 'suspended') {
+                    window.mixer.context.resume();
+                }
+                document.removeEventListener('touchstart', unlockAudio);
+                document.removeEventListener('click', unlockAudio);
+            };
+            document.addEventListener('touchstart', unlockAudio, false);
+            document.addEventListener('click', unlockAudio, false);
+        });
+    </script>
+</body>
+</html>
